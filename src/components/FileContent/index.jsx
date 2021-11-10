@@ -1,22 +1,28 @@
 import React from "react";
 import styled from "styled-components";
+import Editor from "@monaco-editor/react";
 
 function FileContent({
     show,
-    codeRef,
     fileContent,
-    onChange,
-    getContentFile,
+    editorTheme,
+    onMount,
 }) {
+  const codeRef = React.useRef(null);
+
+  const handleEditorDidMount = (editor) => {
+    codeRef.current = editor;
+    onMount(codeRef);
+  }
+
   return (
     <FileContentWrapper style={{ display: show ? "" : "none" }}>
-      <pre>
-        <FileContentCode
-          ref={codeRef}
-          value={fileContent}
-          onChange={onChange}
-          onKeyDown={event => getContentFile(event)}/>
-      </pre>
+      <FileContentCode
+        defaultLanguage="c"
+        loading="Carregando..."
+        theme={editorTheme}
+        defaultValue={fileContent}
+        onMount={handleEditorDidMount}/>
     </FileContentWrapper>
   );
 }
@@ -25,18 +31,11 @@ const FileContentWrapper = styled.div`
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  padding: 40px 0px 20px 70px;
+  padding: 35px 0px 15px 45px;
 `;
 
-const FileContentCode = styled.textarea`
-  color: white;
-  outline: none;
-  border: none;
-  width: 100vw;
-  height: 1002vh;
-  font-weight: bold;
-  background-color: transparent;
-  tab-size: 4;
+const FileContentCode = styled(Editor)`
+  padding: 10px;
 `;
 
 export default FileContent;

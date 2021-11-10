@@ -3,7 +3,8 @@ import styled from 'styled-components'
 
 function SideBar({ 
   openClicked,
-  handleSubmit, 
+  handleSubmit,
+  handleSaveFile,
 }) {
     return (
         <SideBarMenu>
@@ -11,6 +12,9 @@ function SideBar({
                 style={{ marginTop: '15px' }}
                 className="far fa-copy"
                 onClick={() => openClicked()}/>
+            <SideBarItem
+              className="far fa-save"
+              onClick={() => handleSaveFile()}/>
             <SideBarItem 
               className="fas fa-bug"
               onClick={handleSubmit}/>

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import hljs from "highlight.js";
 import styled from "styled-components";
 
 import analyzeString from "./../core/LexicalAnalyzer";
@@ -12,8 +11,12 @@ import TopBar from "./../components/TopBar";
 
 class Main extends Component {
 
+  editor = null;
+  
   state = {
-    tabOpened: true,
+    tabOpened: false,
+    terminalOpened: false,
+    editorTheme: "vs-dark",
     fileContent: "int main() {}",
     results: [],
     tokens: 0,
@@ -24,7 +27,7 @@ class Main extends Component {
     super(props);
 
     this.codeRef = React.createRef();
-  } 
+  }
 
   closeFileClicked() {
     this.setState((prevState) => ({
@@ -32,47 +35,41 @@ class Main extends Component {
     }));
   }
 
-  onChange(event) {
-    this.setState({
-      fileContent: event.target.value,
-    })
-  }
-
-  getContentFile(event) {
-    const code = event.keyCode || event.which;  
-
-    if ([9, 13].includes(code)) {
-      event.preventDefault();
-
-      const characterCode = () => ({
-        9: "\t",
-        13: "\n",
-      }[code]);
-
-      const { selectionStart, selectionEnd } = event.target;
-      this.setState((prevState) => ({
-        fileContent:
-          prevState.fileContent.substring(0, selectionStart) +
-          characterCode() + // '\t' = tab, size can be change by CSS
-          prevState.fileContent.substring(selectionEnd)
-      }), () => {
-        this.codeRef.current.selectionStart = this.codeRef.current.selectionEnd = selectionStart + 1;
-      })
-    }
+  handleToggleTerminal() {
+    this.setState((prevState) => ({
+      terminalOpened: !prevState.terminalOpened,
+    }))
   }
 
   handleSubmit() {
-    const { fileContent } = this.state;
+    const fileContent = this.editor.current.getValue();
     const results = analyzeString(fileContent);
 
     this.setState({
       results,
+      terminalOpened: true,
       tokens: results.length,
     })
   }
 
-  componentDidMount() {
-    hljs.highlightAll();
+  handleSaveFile() {
+    const element = document.createElement("a");
+    const fileContent = this.editor.current.getValue();
+    const file = new Blob([
+      fileContent,
+    ], {
+      type: "text/plain",
+    });
+
+    element.href = URL.createObjectURL(file);
+    element.download = "program.c";
+    document.body.appendChild(element);
+
+    element.click();
+  }
+
+  handleEditorDidMount(editor) {
+    this.editor = editor;
   }
 
   render() {
@@ -80,10 +77,12 @@ class Main extends Component {
       <AppWrapper>
         <SideBar
           openClicked={this.closeFileClicked.bind(this)}
+          handleSaveFile={this.handleSaveFile.bind(this)}
           handleSubmit={this.handleSubmit.bind(this)}/>
         <TerminalBar
-          show={this.state.tokens > 0}
-          results={this.state.results}/>
+          show={this.state.terminalOpened}
+          results={this.state.results}
+          handleToggleTerminal={this.handleToggleTerminal.bind(this)}/>
         <BottomBar 
           tokens={this.state.tokens}
           errors={this.state.errors}/>
@@ -93,9 +92,8 @@ class Main extends Component {
         <FileContent
           show={this.state.tabOpened}
           fileContent={this.state.fileContent}
-          codeRef={this.codeRef}
-          onChange={this.onChange.bind(this)}
-          getContentFile={this.getContentFile.bind(this)}/>
+          editorTheme={this.state.editorTheme}
+          onMount={this.handleEditorDidMount.bind(this)}/>
       </AppWrapper>
     );
   }

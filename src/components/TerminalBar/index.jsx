@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function TerminalBar({ show, results }) {
+function TerminalBar({ 
+  show, 
+  results,
+  handleToggleTerminal,
+}) {
 
   const drawLine = (char) => {
     const windowWidth = window.innerWidth - 135;
@@ -13,10 +17,16 @@ function TerminalBar({ show, results }) {
   return (
     <TerminalBarWrapper
       style={{ display: show ? '' : 'none' }}>
-      <TerminalBarButtonClose className="fas fa-times"/>
-      {drawLine('=')}
+      <TerminalBarButtonClose 
+        className="fas fa-times"
+        onClick={handleToggleTerminal}/>
+      <span>
+        {drawLine('=')}
+      </span>
       <p>Lexical Terminal</p>
-      {drawLine('=')}
+      <span>
+        {drawLine('=')}
+      </span>
       {results.map((line, key) => (
         <p key={key}>
           Command: {line.content} - type: {line.type}
