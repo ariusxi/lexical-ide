@@ -14,10 +14,11 @@ class Main extends Component {
   editor = null;
   
   state = {
-    tabOpened: false,
     terminalOpened: false,
     editorTheme: "vs-dark",
     fileContent: "int main() {}",
+    tabs: [],
+    currentTab: -1,
     results: [],
     tokens: 0,
     errors: 0,
@@ -29,19 +30,65 @@ class Main extends Component {
     this.codeRef = React.createRef();
   }
 
-  closeFileClicked() {
-    this.setState((prevState) => ({
-      tabOpened: !prevState.tabOpened,
-    }));
+  addEditorTab() {
+    const { tabs, currentTab } = this.state;
+    
+    tabs.push({
+      title: `program${tabs.length + 1}.c`,
+      content: 'int main() {}',
+    });
+
+    if (currentTab !== -1) {
+      tabs[currentTab].content = this.editor.current.getValue();
+    }
+
+    this.editor.current.getModel().setValue(tabs[tabs.length - 1].content);
+
+    this.setState({
+      tabs,
+      currentTab: currentTab === -1 ? 0 : tabs.length - 1,
+    });
+  }
+
+  switchEditorTab(index) {
+    const { currentTab, tabs } = this.state;
+
+    tabs[currentTab].content = this.editor.current.getValue();
+    this.editor.current.getModel().setValue(tabs[index].content);
+
+    this.setState({
+      tabs,
+      currentTab: index,
+    })
+  }
+
+  closeEditorTab(index) {
+    const { currentTab, tabs } = this.state;
+
+    tabs.splice(index, 1);
+
+    if (tabs.length === 0) {
+      this.editor.current.getModel().setValue('');
+    } else {
+      this.editor.current.getModel().setValue(tabs[tabs.length - 1].content);
+    }
+
+    this.setState({
+      tabs,
+      currentTab: currentTab === index && tabs.length === 0 ? -1 : tabs.length - 1,
+    })
   }
 
   handleToggleTerminal() {
     this.setState((prevState) => ({
       terminalOpened: !prevState.terminalOpened,
-    }))
+    }));
   }
 
   handleSubmit() {
+    const { currentTab } = this.state;
+    if (currentTab === -1) return;
+
     const fileContent = this.editor.current.getValue();
     const results = analyzeString(fileContent);
 
@@ -49,10 +96,12 @@ class Main extends Component {
       results,
       terminalOpened: true,
       tokens: results.length,
-    })
+    });
   }
 
   handleSaveFile() {
+    const { tabs, currentTab } = this.state;
+
     const element = document.createElement("a");
     const fileContent = this.editor.current.getValue();
     const file = new Blob([
@@ -62,7 +111,7 @@ class Main extends Component {
     });
 
     element.href = URL.createObjectURL(file);
-    element.download = "program.c";
+    element.download = tabs[currentTab].title;
     document.body.appendChild(element);
 
     element.click();
@@ -76,7 +125,7 @@ class Main extends Component {
     return (
       <AppWrapper>
         <SideBar
-          openClicked={this.closeFileClicked.bind(this)}
+          addEditorTab={this.addEditorTab.bind(this)}
           handleSaveFile={this.handleSaveFile.bind(this)}
           handleSubmit={this.handleSubmit.bind(this)}/>
         <TerminalBar
@@ -87,11 +136,15 @@ class Main extends Component {
           tokens={this.state.tokens}
           errors={this.state.errors}/>
         <TopBar
-          show={this.state.tabOpened}
-          closeClicked={this.closeFileClicked.bind(this)}/>
+          show={this.state.tabs.length > 0}
+          tabs={this.state.tabs}
+          currentTab={this.state.currentTab}
+          switchTab={this.switchEditorTab.bind(this)}
+          closeClicked={this.closeEditorTab.bind(this)}/>
         <FileContent
           show={this.state.tabOpened}
-          fileContent={this.state.fileContent}
+          currentTab={this.state.currentTab}
+          tabs={this.state.tabs}
           editorTheme={this.state.editorTheme}
           onMount={this.handleEditorDidMount.bind(this)}/>
       </AppWrapper>

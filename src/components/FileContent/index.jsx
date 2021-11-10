@@ -4,7 +4,8 @@ import Editor from "@monaco-editor/react";
 
 function FileContent({
     show,
-    fileContent,
+    tabs,
+    currentTab,
     editorTheme,
     onMount,
 }) {
@@ -16,12 +17,12 @@ function FileContent({
   }
 
   return (
-    <FileContentWrapper style={{ display: show ? "" : "none" }}>
+    <FileContentWrapper style={{ display: tabs.length > 0 ? "" : "none" }}>
       <FileContentCode
         defaultLanguage="c"
         loading="Carregando..."
         theme={editorTheme}
-        defaultValue={fileContent}
+        defaultValue={''}
         onMount={handleEditorDidMount}/>
     </FileContentWrapper>
   );

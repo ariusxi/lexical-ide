@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 function SideBar({ 
-  openClicked,
+  addEditorTab,
   handleSubmit,
   handleSaveFile,
 }) {
@@ -11,7 +11,7 @@ function SideBar({
             <SideBarItem 
                 style={{ marginTop: '15px' }}
                 className="far fa-copy"
-                onClick={() => openClicked()}/>
+                onClick={() => addEditorTab()}/>
             <SideBarItem
               className="far fa-save"
               onClick={() => handleSaveFile()}/>

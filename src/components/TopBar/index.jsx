@@ -1,18 +1,33 @@
 import React from "react";
 import styled from "styled-components";
 
-function TopBar({ closeClicked, show }) {
+function TopBar({
+  show,
+  tabs,
+  currentTab,
+  switchTab,
+  closeClicked, 
+}) {
+
   return (
     <TopBarWrapper style={{ display: show ? "" : "none" }}>
-      <FileTab style={{ display: show ? "" : "none" }}>
-        <LangIcon />
-        program.c
-        <i
-          style={{ cursor: "pointer" }}
-          className="fas fa-times"
-          onClick={closeClicked}
-        ></i>
-      </FileTab>
+      {tabs.map((tab, key) => (
+        <FileTab 
+          key={key}
+          style={{ backgroundColor: key === currentTab ? "#2b303b" : "#22252e" }}>
+          <div
+            style={{ display: 'flex' }} 
+            onClick={() => switchTab(key)}>
+            <LangIcon />
+            {tab.title}
+          </div>
+          <i
+            style={{ cursor: "pointer" }}
+            className="fas fa-times"
+            onClick={() => closeClicked(key)}>
+          </i>
+        </FileTab>
+      ))}
     </TopBarWrapper>
   );
 }
@@ -28,21 +43,6 @@ const TopBarWrapper = styled.div`
   z-index: 9;
 `;
 
-const FileTab = styled.p`
-  width: 150px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  background-color: #2b303b;
-  margin: 0;
-  font-size: 15px;
-  i {
-    padding-left: 10px;
-  }
-`;
-
 const LangIcon = styled.div`
   width: 20px;
   height: 20px;
@@ -50,6 +50,22 @@ const LangIcon = styled.div`
     center center no-repeat;
   background-size: cover;
   margin-right: 10px;
+`;
+
+const FileTab = styled.p`
+  height: 100%;
+  display: flex;
+  cursor: pointer;
+  float: left;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0;
+  padding: 0 15px;
+  font-size: 15px;
+  i {
+    padding-left: 15px;
+  }
 `;
 
 TopBar.defaultProps = {
