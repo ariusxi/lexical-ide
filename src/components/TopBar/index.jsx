@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 function TopBar({
+  theme,
   show,
   tabs,
   currentTab,
@@ -10,11 +11,17 @@ function TopBar({
 }) {
 
   return (
-    <TopBarWrapper style={{ display: show ? "" : "none" }}>
+    <TopBarWrapper
+      theme={theme}
+      style={{ display: show ? "" : "none" }}>
       {tabs.map((tab, key) => (
         <FileTab 
           key={key}
-          style={{ backgroundColor: key === currentTab ? "#2b303b" : "#22252e" }}>
+          style={{ 
+            backgroundColor: key === currentTab ? 
+              theme.colorTopBarFileTabActive : 
+              theme.colorTopBarFileTab
+            }}>
           <div
             style={{ display: 'flex' }} 
             onClick={() => switchTab(key)}>
@@ -38,7 +45,7 @@ const TopBarWrapper = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-  background-color: #21252d;
+  background-color: ${({ theme }) => theme.colorTopBar};
   padding: 0 50px;
   z-index: 9;
 `;

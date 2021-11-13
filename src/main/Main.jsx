@@ -4,6 +4,7 @@ import styled from "styled-components";
 import analyzeString from "./../core/LexicalAnalyzer";
 
 import BottomBar from "./../components/BottomBar";
+import ConfigBar from "./../components/ConfigBar";
 import FileContent from "./../components/FileContent";
 import SideBar from "./../components/SideBar";
 import TerminalBar from "./../components/TerminalBar";
@@ -12,12 +13,66 @@ import TopBar from "./../components/TopBar";
 class Main extends Component {
 
   editor = null;
+
+  theme = {
+    "vs-dark": {
+      // AppWrapper
+      "colorAppWrapper": "#2b303b",
+      // BottomBar
+      "colorBottomBarWrapper": "#5E2A55",
+      "colorBottomBarWarningError": "#A8AEBC",
+      "colorBottomBarInformation": "#A8AEBC",
+      // SideBar
+      "colorSideBarMenu": "#21252D",
+      "colorSideBarItem": "#727781",
+      "colorSideBarItemHover": "#FFFFFF",
+      "colorSideBarSettings": "#727781",
+      "colorSideBarSettingsHover": "#FFFFFF",
+      // TerminalBar
+      "colorTerminalBar": "#191c22",
+      "colorTerminalBarFont": "#FFFFFF",
+      // TopBar
+      "colorTopBar": "#21252d",
+      "colorTopBarFileTab": "#22252e",
+      "colorTopBarFileTabActive": "#2b303b",
+      // ConfigBar
+      "colorConfigBar": "#22252e",
+      "colorConfigBarActive": "#2b303b",
+      "colorConfigBarFont": "#FFFFFF",
+    },
+    "light": {
+      // AppWrapper
+      "colorAppWrapper": "#d4cfc4",
+      // BottomBar
+      "colorBottomBarWrapper": "#5E2A55",
+      "colorBottomBarWarningError": "#A8AEBC",
+      "colorBottomBarInformation": "#A8AEBC",
+      // SideBar
+      "colorSideBarMenu": "#dedad2",
+      "colorSideBarItem": "#8d887e",
+      "colorSideBarItemHover": "#000000",
+      "colorSideBarSettings": "#8d887e",
+      "colorSideBarSettingsHover": "#000000",
+      // TerminalBar
+      "colorTerminalBar": "#e6e3dd",
+      "colorTerminalBarFont": "#000000",
+      // TopBar
+      "colorTopbar": "#dedad2",
+      "colorTopBarFileTab": "#dddad1",
+      "colorTopBarFileTabActive": "#d4cfc4",
+      // ConfigBar
+      "colorConfigBar": "#d4cfc4",
+      "colorConfigBarActive": "#dddad1",
+      "colorConfigBarFont": "#FFFFFF",
+    },
+  }
   
   state = {
     terminalOpened: false,
     editorTheme: "vs-dark",
     fileContent: "int main() {}",
     tabs: [],
+    showConfig: false,
     currentTab: -1,
     results: [],
     tokens: 0,
@@ -59,7 +114,7 @@ class Main extends Component {
     this.setState({
       tabs,
       currentTab: index,
-    })
+    });
   }
 
   closeEditorTab(index) {
@@ -121,21 +176,46 @@ class Main extends Component {
     this.editor = editor;
   }
 
+  handleShowConfig() {
+    this.setState({
+      showConfig: true,
+    });
+  }
+
+  handleChangeTheme(selectedTheme) {
+    this.setState({
+      showConfig: false,
+      editorTheme: selectedTheme,
+    });
+  }
+
   render() {
+    const { editorTheme, showConfig } = this.state;
+
     return (
-      <AppWrapper>
+      <AppWrapper theme={this.theme[editorTheme]}>
+        <ConfigBar
+          show={showConfig}
+          currentTheme={editorTheme}
+          theme={this.theme[editorTheme]}
+          handleChangeTheme={this.handleChangeTheme.bind(this)}/>
         <SideBar
+          theme={this.theme[editorTheme]}
           addEditorTab={this.addEditorTab.bind(this)}
           handleSaveFile={this.handleSaveFile.bind(this)}
-          handleSubmit={this.handleSubmit.bind(this)}/>
+          handleSubmit={this.handleSubmit.bind(this)}
+          handleShowConfig={this.handleShowConfig.bind(this)}/>
         <TerminalBar
+          theme={this.theme[editorTheme]}
           show={this.state.terminalOpened}
           results={this.state.results}
           handleToggleTerminal={this.handleToggleTerminal.bind(this)}/>
-        <BottomBar 
+        <BottomBar
+          theme={this.theme[editorTheme]}
           tokens={this.state.tokens}
           errors={this.state.errors}/>
         <TopBar
+          theme={this.theme[editorTheme]}
           show={this.state.tabs.length > 0}
           tabs={this.state.tabs}
           currentTab={this.state.currentTab}
@@ -155,7 +235,7 @@ class Main extends Component {
 const AppWrapper = styled.div`
   height: 100vh;
   width: 100vw;
-  background-color: #2b303b;
+  background-color: ${({ theme }) => theme.colorAppWrapper};
   font-family: "Source Code Pro", sans-serif;
   overflow: hidden;
 `;

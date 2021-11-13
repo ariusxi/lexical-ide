@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function TerminalBar({ 
+function TerminalBar({
+  theme,
   show, 
   results,
   handleToggleTerminal,
@@ -16,6 +17,7 @@ function TerminalBar({
 
   return (
     <TerminalBarWrapper
+      theme={theme}
       style={{ display: show ? '' : 'none' }}>
       <TerminalBarButtonClose 
         className="fas fa-times"
@@ -39,8 +41,8 @@ function TerminalBar({
 const TerminalBarWrapper = styled.div`
   width: calc(100% - 70px);
   height: 290px;
-  background-color: #191c22;
-  color: #fff;
+  background-color: ${({ theme }) => theme.colorTerminalBar};
+  color: ${({ theme }) => theme.colorTerminalBarFont};
   position: absolute;
   bottom: 25px;
   left: 50px;
