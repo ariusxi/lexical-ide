@@ -1,26 +1,40 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 
 function SideBar({ 
   theme, 
   addEditorTab, 
-  handleSubmit, 
+  handleSubmit,
+  handleOpenFile,
   handleSaveFile,
   handleShowConfig,
 }) {
+
+  const inputFileRef = useRef(null);
+
+  const handleClickInput = () => {
+    inputFileRef.current.click();
+  }
+
   return (
     <SideBarMenu theme={theme}>
+      <SideBarInputFile
+        type="file"
+        ref={inputFileRef}
+        onChange={handleOpenFile}/>
       <SideBarItem
         theme={theme}
         style={{ marginTop: "15px" }}
         className="far fa-copy"
-        onClick={() => addEditorTab()}
-      />
+        onClick={() => addEditorTab()}/>
+      <SideBarItem
+        theme={theme}
+        className="far fa-folder-open"
+        onClick={() => handleClickInput()}/>
       <SideBarItem
         theme={theme}
         className="far fa-save"
-        onClick={() => handleSaveFile()}
-      />
+        onClick={() => handleSaveFile()}/>
       <SideBarItem
         theme={theme}
         className="fas fa-bug"
@@ -77,5 +91,9 @@ const SideBarSettings = styled.li`
     color: ${({ theme }) => theme.colorSideBarSettingsHover};
   }
 `;
+
+const SideBarInputFile = styled.input`
+  display: none;
+`
 
 export default SideBar;

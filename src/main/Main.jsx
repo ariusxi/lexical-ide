@@ -85,12 +85,12 @@ class Main extends Component {
     this.codeRef = React.createRef();
   }
 
-  addEditorTab() {
+  addEditorTab(content = 'int main() {}') {
     const { tabs, currentTab } = this.state;
     
     tabs.push({
       title: `program${tabs.length + 1}.c`,
-      content: 'int main() {}',
+      content,
     });
 
     if (currentTab !== -1) {
@@ -154,6 +154,19 @@ class Main extends Component {
     });
   }
 
+  handleOpenFile(e) {
+    e.preventDefault();
+
+    const self = this;
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      const fileContent = e.target.result;
+      self.addEditorTab(fileContent);
+    }
+
+    reader.readAsBinaryString(e.target.files[0])
+  }
+
   handleSaveFile() {
     const { tabs, currentTab } = this.state;
 
@@ -202,6 +215,7 @@ class Main extends Component {
         <SideBar
           theme={this.theme[editorTheme]}
           addEditorTab={this.addEditorTab.bind(this)}
+          handleOpenFile={this.handleOpenFile.bind(this)}
           handleSaveFile={this.handleSaveFile.bind(this)}
           handleSubmit={this.handleSubmit.bind(this)}
           handleShowConfig={this.handleShowConfig.bind(this)}/>
