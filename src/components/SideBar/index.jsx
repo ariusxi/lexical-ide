@@ -20,6 +20,7 @@ function SideBar({
     <SideBarMenu theme={theme}>
       <SideBarInputFile
         type="file"
+        accept=".c"
         ref={inputFileRef}
         onChange={handleOpenFile}/>
       <SideBarItem
